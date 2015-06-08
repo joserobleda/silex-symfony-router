@@ -5,7 +5,7 @@ namespace SilexSymfony\Provider;
 use Silex\Application;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
-use Symfony\Component\Routing\Router;
+use SilexSymfony\Routing\Router;
 use Silex\ServiceProviderInterface;
 
 class RouterServiceProvider implements ServiceProviderInterface
@@ -17,7 +17,9 @@ class RouterServiceProvider implements ServiceProviderInterface
     {
         $app['router'] = $app->share(function ($app) {
             $defaults = array(
-                'debug' => $app['debug']
+                'debug'              => $app['debug'],
+                'matcher_base_class' => 'Silex\\RedirectableUrlMatcher',
+                'matcher_class'      => 'Silex\\RedirectableUrlMatcher',
             );
 
             $config = $app['router.resource'];
@@ -27,7 +29,10 @@ class RouterServiceProvider implements ServiceProviderInterface
 
             $options = array_replace($defaults, $app['router.options']);
 
-            return new Router($loader, $config, $options, $app['request_context'], $app['logger']);
+            $router = new Router($loader, $config, $options, $app['request_context'], $app['logger']);
+            $router->setRoutes($app['routes']);
+
+            return $router;
         });
 
         $app['url_matcher'] = $app->share(function ($app) {
