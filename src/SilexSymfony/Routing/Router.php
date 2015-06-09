@@ -47,8 +47,12 @@ class Router extends SymfonyRouter
 
         if (isset($options['_before'])) {
             $options['_before_middlewares'] = $match['_before'];
-
             unset($options['_before']);
+        }
+
+        if (isset($options['_convert'])) {
+            $options['_converters'] = $match['_convert'];
+            unset($options['_convert']);
         }
 
         return $options;
